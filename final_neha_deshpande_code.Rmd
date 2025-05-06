@@ -1,0 +1,178 @@
+---
+title: "Final"
+output: html_document
+date: "2025-05-01"
+---
+
+```{r}
+library(readr)
+sesladder <- read_csv("Downloads/sesladder.csv")
+library(tidyverse)
+library(ggplot2)
+
+```
+```{r}
+df <- read.csv("/Users/nehadeshpande/Downloads/sesladder.csv")
+df<-sesladder
+
+df <- df %>% filter(country %in% c("Argentina", "India"))
+df$sex <- as.factor(df$sex)
+df$country <- as.factor(df$country)
+```
+
+```{r}
+ggplot(df, aes(x = stairs, fill = country)) +
+  geom_histogram(binwidth = 1, position = "dodge") +
+  labs(title = "Distribution of Subjective Social Status", x = "Ladder Score", y = "Count") +
+  theme_minimal()
+```
+## Argentina shows a relatively even spread, with many children scoring themselves in the middle-to-upper range (7–10).
+
+## India has a skew toward slightly lower scores, with more children placing themselves below 7.
+
+```{r}
+df %>% 
+  group_by(country) %>% 
+  summarise(
+    count = n(),
+    mean_ladder = mean(stairs, na.rm = TRUE),
+    median_ladder = median(stairs, na.rm = TRUE),
+    sd_ladder = sd(stairs, na.rm = TRUE),
+    min_ladder = min(stairs, na.rm = TRUE),
+    max_ladder = max(stairs, na.rm = TRUE)
+  )
+```
+
+```{r}
+ggplot(df, aes(x = age, y = stairs, color = country)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Ladder Score vs Age", x = "Age", y = "Ladder Score") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(df, aes(x = sex, y = stairs, fill = country)) +
+  geom_boxplot(position = position_dodge()) +
+  labs(title = "Ladder Score by Gender", x = "Gender", y = "Ladder Score") +
+  theme_minimal()
+```
+
+```{r}
+df %>% 
+  group_by(country) %>% 
+  summarise(
+    corr_house = cor(stairs, Qhouse, use = "complete.obs"),
+    corr_food = cor(stairs, Qfood, use = "complete.obs"),
+    corr_money = cor(stairs, Qmoney, use = "complete.obs"),
+    corr_things = cor(stairs, Qthings, use = "complete.obs")
+  )
+```
+
+## Argentina: Weak correlations overall. Slight positive relationship with food quality, meaning children who feel they have better food might rate themselves a bit higher. Negative or near-zero values for other indicators suggest material access is not strongly tied to subjective status here
+
+## Moderate positive correlations with money and things. This implies children who have more money or possessions tend to report higher social status. Food and housing quality are weakly or negatively correlated.
+
+```{r}
+corr_matrix <- df %>%
+  select(stairs, Qhouse, Qfood, Qmoney, Qthings) %>%
+  cor(use = "complete.obs")
+
+library(reshape2)
+corr_melt <- melt(corr_matrix)
+
+ggplot(corr_melt, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile() +
+  geom_text(aes(label = round(value, 2)), color = "white") +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0) +
+  labs(title = "Correlation Heatmap", x = "", y = "") +
+  theme_minimal()
+```
+
+
+## Random Forest
+
+```{r}
+library(tidyverse)
+library(randomForest)
+
+df$sex <- as.factor(df$sex)
+df$country <- as.factor(df$country)
+
+df_rf <- df %>%
+  select(stairs, age, sex, country, Qhouse, Qfood, Qmoney, Qthings) %>%
+  na.omit()
+
+set.seed(123)
+sample_size <- floor(0.8 * nrow(df_rf))
+train_indices <- sample(seq_len(nrow(df_rf)), size = sample_size)
+
+train_data <- df_rf[train_indices, ]
+test_data <- df_rf[-train_indices, ]
+
+rf_model <- randomForest(
+  stairs ~ age + sex + country + Qhouse + Qfood + Qmoney + Qthings,
+  data = train_data,
+  importance = TRUE,
+  ntree = 500
+)
+
+predictions <- predict(rf_model, newdata = test_data)
+mse <- mean((predictions - test_data$stairs)^2)
+r_squared <- 1 - sum((predictions - test_data$stairs)^2) / sum((test_data$stairs - mean(test_data$stairs))^2)
+
+print(paste("MSE:", round(mse, 2)))
+print(paste("R-squared:", round(r_squared, 2)))
+
+print(rf_model)
+varImpPlot(rf_model, main = "Variable Importance (Random Forest)")
+
+
+```
+
+
+```{r}
+library(tidyverse)
+library(randomForest)
+
+df <- df %>%
+  mutate(
+    material_index = rowMeans(select(., Qhouse, Qfood, Qmoney, Qthings), na.rm = TRUE)
+  )
+
+df_rf <- df %>%
+  select(stairs, age, sex, country, material_index) %>%
+  na.omit()
+
+set.seed(123)
+sample_size <- floor(0.8 * nrow(df_rf))
+train_indices <- sample(seq_len(nrow(df_rf)), size = sample_size)
+
+train_data <- df_rf[train_indices, ]
+test_data <- df_rf[-train_indices, ]
+
+rf_index_model <- randomForest(
+  stairs ~ age + sex + country + material_index,
+  data = train_data,
+  importance = TRUE,
+  ntree = 500
+)
+
+predictions <- predict(rf_index_model, newdata = test_data)
+
+mse <- mean((predictions - test_data$stairs)^2)
+print(paste("Mean Squared Error (MSE):", round(mse, 2)))
+
+rss <- sum((predictions - test_data$stairs)^2)
+tss <- sum((test_data$stairs - mean(test_data$stairs))^2)
+r_squared <- 1 - rss / tss
+print(paste("R-squared:", round(r_squared, 2)))
+
+print(rf_index_model)
+varImpPlot(rf_index_model, main = "Importance (with Material Index)")
+
+```
+```{r}
+
+```
+
