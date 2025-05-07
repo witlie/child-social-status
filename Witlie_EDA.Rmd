@@ -1,0 +1,86 @@
+---
+title: "Witlie_EDA"
+author: "Witlie Leslie"
+date: "2025-05-01"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+#Load data
+sesdata <- read.csv("/Users/witlie/Documents/R/School/Capstone/Final Project/Data/sesladder.csv")
+sesdata$stairs <- as.factor(sesdata$stairs)
+sesdata$Qhouse <- as.factor(sesdata$Qhouse)
+sesdata$Qfood <- as.factor(sesdata$Qfood)
+sesdata$Qmoney <- as.factor(sesdata$Qmoney)
+sesdata$Qthings <- as.factor(sesdata$Qthings)
+
+#Create df for US data
+usdata <- sesdata[sesdata$country == "USA", ]
+```
+
+```{r}
+#Look at general demographic info for USA
+ggplot(usdata, aes(x = age)) + geom_bar() ## Somewhat normally distributed, peak at 8-9 years of age
+
+ggplot(usdata, aes(x = sex)) + geom_bar() ## Somewhat equal distribution of males and females, with slightly more females
+```
+
+```{r}
+#Look at distribution of ses responses for USA
+
+ggplot(usdata, aes(x = stairs)) + geom_bar() ## Right skewed, two peaks at 1 and 5
+
+ggplot(usdata, aes(x = Qhouse)) + geom_bar() ## Roughly equal responses between 1 and 2, fewer 3 responses (Right skewed)
+
+ggplot(usdata, aes(x = Qfood)) + geom_bar() ## Response of 2 very common, very few 3 responses
+
+ggplot(usdata, aes(x = Qmoney)) + geom_bar() ## Response of 2 very common, followed by response of 1 and then 3
+
+ggplot(usdata, aes(x = Qthings)) + geom_bar() ## Response of 1 most common, 2 responses slightly less, few 3 responses
+```
+
+Across all metrics, an middling score was consistently common. This indicates that many children feel that their family has largely the same quality/quantity of wealth/status as others. Only for the Qthings metric was a response other than 2 the most common. Most children gave a response of 1, indicating that the majority of children feel as though their family has more things than others. Across all 4 comparison questions, a response of 3 was much less common than 1 or 2, indicating that few children feel as though they have less than other families. Among the SES ladder responses, 5 was the most common, indicating that most children feel that their family is in the middle between the most and least well-off families in the USA. A response of 1 was also very common, indicating that many children view their family among the most well-off in the USA.
+
+```{r}
+#Look at how ses responses relate to demographic variables for USA
+ggplot(usdata, aes(x = age, y = stairs, color = sex)) +
+  geom_point() +
+  geom_jitter()
+```
+More extreme stair responses are seen among younger children.  
+
+```{r, warning=FALSE}
+#Look at distribution of variables for all countries
+
+# Demographic variables
+ggplot(sesdata, aes(x = age)) + geom_bar() ## Normally distributed, slightly right skewed, peak between 7-12
+
+ggplot(sesdata, aes(x = sex)) + geom_bar() ## Uniform distribution, very slightly more female respondents
+
+# SES variables
+ggplot(sesdata, aes(x = stairs)) + geom_bar() +
+  labs(title = "Distribution of MacArthur Stairs Score across All regions") +
+       xlab("Stairs") + ylab("Count")# Distribution is somewhat similar to that of US responses, except instead of 5 being most common, it is second most common with 1 being the most common response. 
+
+ggplot(sesdata, aes(x = Qhouse)) + geom_bar() ## Right skewed, response of 1 most common followed closely by 2
+
+ggplot(sesdata, aes(x = Qfood)) + geom_bar() ## Response of 2 most common, similar amount of 1 and 3 responses
+
+ggplot(sesdata, aes(x = Qmoney)) + geom_bar() ## Response of 2 most common, followed by 3 and then 1
+
+ggplot(sesdata, aes(x = Qthings)) + geom_bar() ## Right skewed, response of 1 most common 
+
+# Scatterplot
+ggplot(sesdata, aes(x = age, y = stairs, color = sex)) +
+  geom_point() +
+  geom_jitter() ## Lower stairs responses appear more common among younger children
+```
+
+A ladder score of 1 is the most common response, and in the comparative metrics, the majority of children indicated that they feel they have the same or better than other families. Only in terms of money do more children feel they have less than others rather than more.
