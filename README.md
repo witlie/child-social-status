@@ -11,7 +11,8 @@ This project explores how children from different regions perceive their social 
 - [Logistic Regression](#logistic-regression)
 - [Machine Learning Models](#machine-learning-models)
 - [Dashboard](#dashboard)
-- [Works Cited] (#works-cited)
+- [Works Cited](#works-cited)
+  
   
 
 
