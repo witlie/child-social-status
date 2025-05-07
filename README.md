@@ -30,6 +30,10 @@ We analyzed how perceived social status varied across regions, with specific foc
 
 We used k-means clustering to group children based on numeric survey responses. Using an elbow plot, we identified four clusters corresponding to combinations of age and perceived social status. While the clusters were somewhat intuitive, they did not reveal the unexpected subgroupings we hoped for, likely due to the smaller data size. 
 
+## Logistic Regression
+
+To further investigate the relationship between variables, we assessed multiple logistic regression models with different interaction terms. The only term that showed correlation with the binary response of high social status (stairs >= 5) was the interaction between country and Qmoney with a p-value of 0.012. Most regions showed that predicted probability of high social status decreases as Qmoney score increases. This is intuitive, as money is closely related to social status. However, this effect was reversed for Argentina, where children who describe their families as having less money are more likely to describe their family as having a high social status. A possible explanation for this relationship could be that money is less significant in Argentinian children's perception of social status than other metrics (such as food, things, and house quality).
+
 ## Machine Learning Models
 
 We trained a random forest regression model to predict `stairs` using age, sex, country, and `material_index`. The model achieved:
