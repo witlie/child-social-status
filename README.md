@@ -24,7 +24,7 @@ We used survey data from children from 4 different regions that measure their se
 
 ## Exploratory Analysis
 
-We analyzed how perceived social status varied across regions, with specific focus on India, Argentina, and two rural areas in Ecuador—Cross Cutucú and Upano Valley. We found that children in Cross Cutucú generally reported higher scores across all well-being indicators, likely reflecting the role of local community networks. Results indicated that in India, access to money and personal items had the strongest positive correlations with higher social status, whereas in Argentina, access to food showed the strongest association. 
+We analyzed how perceived social status varied across regions, with specific focus on India, Argentina, and two rural areas in Ecuador. We found that children in Cross Cutucú generally reported higher scores across all well-being indicators, likely reflecting the role of local community networks. Results indicated that in India, access to money and personal items had the strongest positive correlations with higher social status, whereas in Argentina, access to food showed the strongest association. 
 
 ## Clustering
 
