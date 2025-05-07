@@ -1,0 +1,121 @@
+---
+title: "Witlie_K_Means_Clustering"
+author: "Witlie"
+date: "2025-05-04"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+#install.packages("factoextra")
+library(factoextra)
+library(dplyr)
+```
+
+```{r}
+sesdata <- read.csv("/Users/witlie/Documents/R/School/Capstone/Final Project/Data/sesladder.csv")
+# sesdata$stairs <- as.factor(sesdata$stairs)
+# sesdata$Qhouse <- as.factor(sesdata$Qhouse)
+# sesdata$Qfood <- as.factor(sesdata$Qfood)
+# sesdata$Qmoney <- as.factor(sesdata$Qmoney)
+# sesdata$Qthings <- as.factor(sesdata$Qthings)
+
+# Social Comparison Index variable
+sesdata$SCI <- sesdata$Qhouse + sesdata$Qfood +sesdata$Qmoney + sesdata$Qthings
+```
+
+```{r}
+# Look at correlation between variables
+sesdata |>
+  select(age, stairs, Qhouse, Qfood, Qmoney, Qthings) |>
+  cor(use = "pairwise.complete.obs") |>
+  round(2)
+```
+
+```{r, warning=FALSE}
+# Visualize data
+ggplot(sesdata, aes(age, stairs, color = country, shape = country)) +
+    geom_point(alpha = 0.25) +
+    xlab("Age") +
+    ylab("Stairs") +
+  geom_jitter()
+
+ggplot(sesdata, aes(SCI, stairs, color = country, shape = country)) +
+    geom_point(alpha = 0.25) +
+    xlab("SCI") +
+    ylab("Stairs") +
+  geom_jitter()
+```
+```{r}
+sesdata_num <- sesdata[, c("age", "stairs", "Qhouse", "Qfood", "Qmoney", "Qthings", "SCI")]
+
+set.seed(478)
+km_out <- kmeans(na.omit(sesdata_num), centers = 3, nstart = 20)
+km_out
+```
+
+```{r}
+set.seed(478)
+n_clusters <- 10
+
+# Within sum of squares error
+wss <- numeric(n_clusters)
+
+for (i in 1:n_clusters) {
+  km_out <- kmeans(na.omit(sesdata_num), centers = i, nstart = 20)
+  wss[i] <- km_out$tot.withinss
+}
+
+wss_df <- tibble(clusters = 1:n_clusters, wss = wss)
+ 
+scree_plot <- ggplot(wss_df, aes(x = clusters, y = wss, group = 1)) +
+    geom_point(size = 4)+
+    geom_line() +
+    scale_x_continuous(breaks = c(2, 4, 6, 8, 10)) +
+    xlab('Number of clusters')
+scree_plot
+```
+
+```{r}
+scree_plot +
+    geom_hline(
+        yintercept = wss, 
+        linetype = 'dashed', 
+        col = c(rep('#000000',3),'#FF0000', rep('#000000', 6))) +
+  ylab("Within-cluster Sum of Squares (WSS)") +
+  labs(title = "WSS by K value")
+```
+After 4 clusters, the decrease in WSS becomes less significant.
+
+```{r}
+k <- 4
+set.seed(478)
+km_out <- kmeans(na.omit(sesdata_num), centers = k, nstart = 20)
+km_out
+```
+
+```{r}
+sesdata_num <- na.omit(sesdata_num)
+sesdata_num$cluster_id <- factor(km_out$cluster)
+
+ggplot(sesdata_num, aes(age, stairs, color = cluster_id)) +
+    geom_point(alpha = 0.25) +
+    xlab("Age") +
+    ylab("Stairs") +
+  geom_jitter() +
+  labs(title = "MacArthur Stairs Score vs Age by Cluster")
+
+ggplot(sesdata_num, aes(SCI, stairs, color = cluster_id)) +
+    geom_point(alpha = 0.25) +
+    xlab("SCI") +
+    ylab("Stairs") +
+  geom_jitter()
+
+ggplot(sesdata_num, aes(SCI, age, color = cluster_id)) +
+    geom_point(alpha = 0.25) +
+    xlab("SCI") +
+    ylab("Age") +
+  geom_jitter()
+```
+
