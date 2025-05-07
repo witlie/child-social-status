@@ -1,0 +1,100 @@
+---
+title: "Witlie_Log_Regression"
+author: "Witlie"
+date: "2025-05-07"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Set up
+```{r}
+# Set up
+library(ggplot2)
+library(car)
+library(MASS)
+
+sesdata <- read.csv("/Users/witlie/Documents/R/School/Capstone/Final Project/Data/sesladder.csv")
+
+# Convert categorical variables to factors
+sesdata$country <- factor(sesdata$country)
+sesdata$sex <- factor(sesdata$sex)
+
+# Center continuous predictor
+sesdata$age_cen <- scale(sesdata$age, scale = FALSE)
+
+# Transform response to a binary variable for high and low stair status 
+sesdata$stair_bin <- factor(ifelse(sesdata$stair <= 5, 1, 0))
+```
+
+# Assumptions & Base Model
+```{r, warning=FALSE}
+base_model <- glm(stair_bin ~ age_cen + Qmoney + Qthings + Qhouse + Qfood, 
+                  family = binomial, 
+                  data = sesdata)
+
+crPlots(base_model)
+vif(base_model)
+```
+Lines are approximately straight which suggests linearity. All variance inflation factor values are less than 2, indicating acceptable collinearity.
+
+```{r}
+summary(base_model)
+```
+Age and Qfood show a significant correlation with response variable in the base model.
+
+# Interaction term between age and sex
+```{r}
+model1 <- glm(stair_bin ~ age_cen * sex + country + Qhouse + Qmoney + Qfood + Qthings,
+              family = binomial, 
+              data = sesdata)
+summary(model1)
+```
+Age, sex, and the dummy variables for India and the USA show significant correlation with the response. Interaction terms was not significant. This indicates that the effect of age on stair response does not differ significantly between males and females.
+
+# Interaction between country and money
+```{r}
+model2 <- glm(stair_bin ~ age_cen + sex + country * Qmoney + Qhouse  + Qfood + Qthings,
+              family = binomial, 
+              data = sesdata)
+summary(model2)
+```
+Age, sex, the dummy variables for India and the USA, as well as the interaction term between the USA and Qmoney show significant correlation with the response. Because the interaction term between country and money is significant, this indicates that the effect of feeling comparatively poorer or richer on a child's reported social status depends on the country in which that child lives.
+
+# Interaction between age and things
+```{r}
+model3 <- glm(stair_bin ~ age_cen * Qthings + sex + country + Qmoney + Qhouse  + Qfood,
+              family = binomial, 
+              data = sesdata)
+summary(model3)
+```
+The interaction term between age and Qthings does not show significance, and age on its own no longer displays significance either. Sex, and the dummy variables for India and the USA show significant correlation with the response.
+
+# Interaction between age and money
+```{r}
+model4 <- glm(stair_bin ~ age_cen * Qmoney + Qthings + sex + country + Qhouse  + Qfood,
+              family = binomial, 
+              data = sesdata)
+summary(model4)
+```
+Once again, neither the interaction term nor age alone display significance. Sex, and the dummy variables for India and the USA display significant correlation with the response.
+
+# Interaction between sex and things
+```{r}
+model5 <- glm(stair_bin ~ age_cen + sex * Qthings + country + Qmoney + Qhouse  + Qfood,
+              family = binomial, 
+              data = sesdata)
+summary(model5)
+```
+The interaction term does not show significance. Age, and the dummy variables for India and the USA show significant correlation with the response.
+
+```{r}
+library(interactions)
+interact_plot(model2, pred = Qmoney, modx = country, 
+              interval = TRUE, int.width = 0.95,
+              y.label = "Prob(stair_bin=1)", main.title = "Predicted Probability of High Status as Function of QMoney Score")
+```
+
+The graph above depicts the predicted probability that a child will assign themselves a high social status on the MacArthur ladder (stair >= 5) as a function of their comparative money score for each region. For most regions, probability of high status decreases as Qmoney score increases (the sense of having less money than others increases). This makes sense intuitively, as money is a significant factor in social status. Interestingly, this relationship is inverted for Argentina, with children who say they have less money than others being more likely to describe their family as having a high social status. 
