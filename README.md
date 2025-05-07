@@ -48,19 +48,13 @@ These results indicate the model struggled to capture meaningful patterns in the
 ## Dashboard
 We created an interactive dashboard using Streamlit to help users explore the data. It includes:
 
-Filters to select country and age range
-
-A table showing filtered data
-
-A comparison of linear regression and random forest model results
-
-A tool to test predictions based on different inputs
-
-Logistic Regression Insights
-
-A world map showing average ladder scores by country
-
-A local map highlighting regions in Ecuador
+- Filters to select country and age range
+- Table showing filtered data
+- Comparison of linear regression and random forest model results
+- Tool to test predictions based on different inputs
+- Logistic Regression Insights
+- World map showing average ladder scores by country
+- Local map highlighting regions in Ecuador 
 
 ## Works Cited
 Amir D, Valeggia C, Srinivasan M, Sugiyama LS, Dunham Y (2019) Measuring subjective 
