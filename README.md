@@ -51,9 +51,32 @@ A comparison of linear regression and random forest model results
 
 A tool to test predictions based on different inputs
 
+Logistic Regression Insights
+
 A world map showing average ladder scores by country
 
 A local map highlighting regions in Ecuador
+
+## Works Cited
+Amir D, Valeggia C, Srinivasan M, Sugiyama LS, Dunham Y (2019) Measuring subjective 
+social status in children of diverse societies. PLOS ONE 14(12): e0226550. 
+https://doi.org/10.1371/journal.pone.0226550
+
+DataCamp. (n.d.). Python tutorial: Streamlit. DataCamp. Retrieved April 27, 2025, from  
+https://www.datacamp.com/tutorial/streamlit
+
+Ditmars, H. (2024, January 19). Why the ancient Amazonian cities recently discovered in 
+Ecuador are so significant. The Art Newspaper. https://www.theartnewspaper.com/2024/01/19/ecuador-amazonian-settlements-lidarupano-valley(The Art Newspaper)
+
+Open Case Studies. (2020, January 27). Why the struggles of the Shuar Indigenous People in 
+Ecuador to conserve their culture are key to local conservation. The University of British 
+Columbia. https://cases.open.ubc.ca/why-the-struggles-of-the-shuar-indigenous-people-in-ecuador-to-conserve-their-culture-are-key-to-local-conservation/
+
+Streamlit. (n.d.). Create an app. Streamlit Documentation. Retrieved April 27, 2025, from
+https://docs.streamlit.io/get-started/tutorials/create-an-app
+
+Streamlit. (n.d.). Streamlit [YouTube channel]. YouTube. Retrieved April 27, 2025, from  
+https://www.youtube.com/@streamlitofficial
 
 
 
