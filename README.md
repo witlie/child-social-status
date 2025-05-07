@@ -8,6 +8,7 @@ This project explores how children from different regions perceive their social 
 - [Data](#data)
 - [Exploratory Analysis](#exploratory-analysis)
 - [Clustering](#clustering)
+- [Logistic Regression](#logistic-regression)
 - [Machine Learning Models](#machine-learning-models)
 - [Dashboard](#dashboard)
 
